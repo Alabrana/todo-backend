@@ -43,7 +43,7 @@ todo-backend/
 1. Clona el repositorio y entra al directorio:
 
 ```bash
-git clone https://github.com/tuusuario/todo-backend.git
+git clone git@github.com:Alabrana/todo-backend.git
 cd todo-backend
 ```
 
@@ -71,11 +71,87 @@ o en su defecto utiliza la extension Live Server, luego botón derecho sobre los
 
 - http://localhost:3000/clienteA.html
 - http://localhost:3000/clienteB.html
+
   o si usas LiveServer
-  http://127.0.0.1:5500/clienteA.html
-  http://127.0.0.1:5500/clienteB.html
+
+- http://127.0.0.1:5500/clienteA.html
+- http://127.0.0.1:5500/clienteB.html
 
 > Asegúrate de que el backend esté corriendo en `localhost:3000`.
+
+## Pruebas
+
+Luego de levantar el proyecto se crea la bd.
+Ten en vista las dos paginas clienteA.html y clienteB.html
+
+1. POST
+
+Crear al menos 5 tareas.
+
+```bash
+curl --request POST \
+  --url http://localhost:3000/tasks \
+  --header 'Content-Type: application/json' \
+  --header 'User-Agent: insomnia/11.1.0' \
+  --data '{
+  "title": "Tarea test",
+  "description": "Ejemplo descripcion de una tarea",
+	"status": "pendiente"
+}'
+```
+
+respuesta
+
+```bash
+
+{
+	"dateCreate": "2025-05-30T08:19:28.807Z",
+	"dateUpdate": "2025-05-30T08:19:28.807Z",
+	"id": 5,
+	"title": "Tarea test",
+	"description": "Ejemplo descripcion de una tarea",
+	"status": "pendiente"
+}
+
+```
+
+Se debe actualizar las vistas de los clientes.
+
+2. PUT
+
+Considerar que para efectos de prueba el id de la task 1 esta asociado al clienteA y el id de la task 2 esta asociado al clienteB.
+Al cambiar el estado en la task id: 1 a Completado solo se debe ver reflejado el clienteA y no en el B
+Al cambiar el estado en la task id: 2 a Completado solo se debe ver reflejado el clienteB y no en el A
+
+```bash
+
+curl --request PUT \
+  --url http://localhost:3000/tasks/1 \
+  --header 'Content-Type: application/json' \
+  --header 'User-Agent: insomnia/11.1.0' \
+  --data '{
+  "status": "Completado"
+}'
+```
+
+Se deben actualizar el cliente que corresponde.
+
+3. DELETE
+
+Para efectos de prueba se sugiere eliminar task id 1 o 2, esto para ver reflejado en pantalla la actualizacion
+
+```bash
+
+curl --request DELETE \
+  --url http://localhost:3000/tasks/2 \
+  --header 'User-Agent: insomnia/11.1.0'
+```
+
+## Oportunidades de mejoras
+
+1. Aplicar Zod a los endpoint para mayor seguridad.
+2. Completar el manejo de errores.
+3. Agregar tests
 
 ## Créditos
 
