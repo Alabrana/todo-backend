@@ -147,6 +147,10 @@ curl --request DELETE \
   --header 'User-Agent: insomnia/11.1.0'
 ```
 
+## Demo CRUD
+
+[![Ver demo en YouTube](https://img.youtube.com/vi/axhD6nEVopE/0.jpg)](https://youtu.be/axhD6nEVopE)
+
 ## Oportunidades de mejoras
 
 1. Aplicar Zod a los endpoint para mayor seguridad.
