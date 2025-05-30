@@ -1,10 +1,29 @@
-import { DataTypes, Model } from "sequelize";
+import { DataTypes, Model, Optional } from "sequelize";
 import { sequelize } from "../db/sequelize.js";
+import { StatusEnum } from "../enums.js";
 
-export class Task extends Model {
-  declare id: number;
-  declare description: string;
-  declare status: boolean;
+export interface TaskAttributes {
+  id: number;
+  title: string;
+  description: string;
+  status: string;
+  dateCreate: Date;
+  dateUpdate: Date;
+}
+
+export interface TaskCreationAttributes
+  extends Optional<TaskAttributes, "id" | "dateCreate" | "dateUpdate"> {}
+
+export class Task
+  extends Model<TaskAttributes, TaskCreationAttributes>
+  implements TaskAttributes
+{
+  public id!: number;
+  public title!: string;
+  public description!: string;
+  public status!: string;
+  public dateCreate!: Date;
+  public dateUpdate!: Date;
 }
 
 Task.init(
@@ -14,14 +33,28 @@ Task.init(
       autoIncrement: true,
       primaryKey: true,
     },
-    description: {
+    title: {
       type: DataTypes.STRING,
       allowNull: false,
     },
+    description: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+    },
     status: {
-      type: DataTypes.BOOLEAN,
+      type: DataTypes.STRING,
       allowNull: false,
-      defaultValue: false,
+      defaultValue: StatusEnum.Pendiente,
+    },
+    dateCreate: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      defaultValue: DataTypes.NOW,
+    },
+    dateUpdate: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      defaultValue: DataTypes.NOW,
     },
   },
   {

@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Cliente B - Tarea 2</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+</head>
+<body class="bg-gray-100">
+  <div class="max-w-md mx-auto mt-10 p-4 bg-white rounded shadow">
+    <h1 class="text-2xl font-bold mb-4">Cliente B - Tarea 2</h1>
+    <ul id="task-list" class="space-y-2"></ul>
+    <p id="no-tasks" class="text-gray-500 text-center">No hay tareas</p>
+  </div>
+
+  <script>
+    const TASK_ID = 2;
+    const socket = io("http://localhost:3000");
+    const taskList = document.getElementById("task-list");
+    const noTasks = document.getElementById("no-tasks");
+
+    socket.on("connect", () => {
+      console.log(`Conectado como ${socket.id}`);
+      socket.emit("join-task", TASK_ID);
+    });
+
+    const renderTask = (task) => {
+      if (document.getElementById(`task-${task.id}`)) return;
+      const li = document.createElement("li");
+      li.id = `task-${task.id}`;
+      li.className = "p-2 bg-blue-100 rounded";
+      li.innerHTML = `
+        <div>
+          <p class="text-xs text-gray-500">Id: ${task.id}</p>
+          <p class="font-semibold">${task.title}</p>
+          <p class="text-sm text-gray-600">${task.description || ''}</p>
+          <p class="text-xs text-gray-500">Status: ${task.status}</p>
+        </div>
+      `;
+      taskList.appendChild(li);
+      noTasks.style.display = "none";
+    };
+
+    const updateTaskDisplay = (id) => {
+      if (id !== TASK_ID) {
+        console.log(`Cliente ignora update visual de tarea ${id}`);
+        return;
+      }
+      fetch(`http://localhost:3000/tasks/${id}`)
+        .then(res => res.json())
+        .then(task => {
+          const el = document.getElementById(`task-${id}`);
+          if (el) {
+            el.innerHTML = `
+              <div>
+                <p class="text-xs text-gray-500">Id: ${task.id}</p>
+                <p class="font-semibold">${task.title}</p>
+                <p class="text-sm text-gray-600">${task.description || ''}</p>
+                <p class="text-xs text-gray-500">Status: ${task.status}</p>
+              </div>
+            `;
+          }
+        });
+    };
+
+    const removeTask = (id) => {
+      if (id !== TASK_ID) return;
+      const el = document.getElementById(`task-${id}`);
+      if (el) {
+        el.remove();
+        if (taskList.children.length === 0) {
+          noTasks.style.display = "block";
+        }
+      }
+    };
+
+    fetch("http://localhost:3000/tasks")
+      .then(res => res.json())
+      .then(tasks => {
+        if (tasks.length === 0) return;
+        noTasks.style.display = "none";
+        tasks.forEach(renderTask);
+      });
+
+    socket.on("task-created", renderTask);
+    socket.on("task-status-updated", ({ id }) => updateTaskDisplay(id));
+    socket.on("task-deleted", ({ id }) => removeTask(id));
+  </script>
+</body>
+</html>
