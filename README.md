@@ -30,9 +30,8 @@ todo-backend/
 │   ├── sockets/
 │   ├── db/
 │   └── index.ts
-├── public/
-│   ├── clienteA.html
-│   └── clienteB.html
+│── clienteA.html
+│── clienteB.html
 ├── db.sqlite
 ├── package.json
 └── tsconfig.json
